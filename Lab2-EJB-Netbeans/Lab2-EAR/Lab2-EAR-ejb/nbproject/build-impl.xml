@@ -780,8 +780,16 @@ exists or setup the property manually. For example like this:
     <!--
                 COMPILATION SECTION
             -->
-    <target depends="init" if="no.dist.ear.dir" name="-deps-module-jar" unless="no.deps"/>
-    <target depends="init" if="dist.ear.dir" name="-deps-ear-jar" unless="no.deps"/>
+    <target depends="init" if="no.dist.ear.dir" name="-deps-module-jar" unless="no.deps">
+        <ant antfile="${project.Lab2-EAR-console}/build.xml" inheritall="false" target="jar">
+            <property name="deploy.on.save" value="false"/>
+        </ant>
+    </target>
+    <target depends="init" if="dist.ear.dir" name="-deps-ear-jar" unless="no.deps">
+        <ant antfile="${project.Lab2-EAR-console}/build.xml" inheritall="false" target="jar">
+            <property name="deploy.on.save" value="false"/>
+        </ant>
+    </target>
     <target depends="init, -deps-module-jar, -deps-ear-jar" name="deps-jar"/>
     <target depends="init,deps-jar" name="-pre-pre-compile">
         <mkdir dir="${build.classes.dir}"/>
@@ -793,33 +801,33 @@ exists or setup the property manually. For example like this:
     </target>
     <target depends="compile,-library-inclusion-in-archive-weblogic,-library-inclusion-in-archive-by-user" name="library-inclusion-in-archive"/>
     <target if="is.jars.in.ejbjar" name="-library-inclusion-in-archive-by-user">
-        <copyfiles files="${file.reference.Lab2-EAR-console.jar}" todir="${build.classes.dir}"/>
         <copyfiles files="${file.reference.mysql-5.6.jar}" todir="${build.classes.dir}"/>
         <copyfiles files="${file.reference.eclipselink.jar}" todir="${build.classes.dir}"/>
         <copyfiles files="${file.reference.javax.persistence_2.1.0.v201304241213.jar}" todir="${build.classes.dir}"/>
         <copyfiles files="${file.reference.org.eclipse.persistence.jpa.jpql_2.5.2.v20140319-9ad6abd.jar}" todir="${build.classes.dir}"/>
+        <copyfiles files="${reference.Lab2-EAR-console.jar}" todir="${build.classes.dir}"/>
     </target>
     <target if="is.server.weblogic" name="-library-inclusion-in-archive-weblogic">
-        <basename file="${file.reference.Lab2-EAR-console.jar}" property="manifest.file.reference.Lab2-EAR-console.jar"/>
         <basename file="${file.reference.mysql-5.6.jar}" property="manifest.file.reference.mysql-5.6.jar"/>
         <basename file="${file.reference.eclipselink.jar}" property="manifest.file.reference.eclipselink.jar"/>
         <basename file="${file.reference.javax.persistence_2.1.0.v201304241213.jar}" property="manifest.file.reference.javax.persistence_2.1.0.v201304241213.jar"/>
         <basename file="${file.reference.org.eclipse.persistence.jpa.jpql_2.5.2.v20140319-9ad6abd.jar}" property="manifest.file.reference.org.eclipse.persistence.jpa.jpql_2.5.2.v20140319-9ad6abd.jar"/>
+        <basename file="${reference.Lab2-EAR-console.jar}" property="manifest.reference.Lab2-EAR-console.jar"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update">
             <attribute name="Extension-List" value="jar-1 jar-2 jar-3 jar-4 jar-5 "/>
-            <attribute name="jar-1-Extension-Name" value="${manifest.file.reference.Lab2-EAR-console.jar}"/>
-            <attribute name="jar-2-Extension-Name" value="${manifest.file.reference.mysql-5.6.jar}"/>
-            <attribute name="jar-3-Extension-Name" value="${manifest.file.reference.eclipselink.jar}"/>
-            <attribute name="jar-4-Extension-Name" value="${manifest.file.reference.javax.persistence_2.1.0.v201304241213.jar}"/>
-            <attribute name="jar-5-Extension-Name" value="${manifest.file.reference.org.eclipse.persistence.jpa.jpql_2.5.2.v20140319-9ad6abd.jar}"/>
+            <attribute name="jar-1-Extension-Name" value="${manifest.file.reference.mysql-5.6.jar}"/>
+            <attribute name="jar-2-Extension-Name" value="${manifest.file.reference.eclipselink.jar}"/>
+            <attribute name="jar-3-Extension-Name" value="${manifest.file.reference.javax.persistence_2.1.0.v201304241213.jar}"/>
+            <attribute name="jar-4-Extension-Name" value="${manifest.file.reference.org.eclipse.persistence.jpa.jpql_2.5.2.v20140319-9ad6abd.jar}"/>
+            <attribute name="jar-5-Extension-Name" value="${manifest.reference.Lab2-EAR-console.jar}"/>
         </manifest>
     </target>
     <target depends="compile" name="library-inclusion-in-manifest">
-        <copyfiles files="${file.reference.Lab2-EAR-console.jar}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.mysql-5.6.jar}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.eclipselink.jar}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.javax.persistence_2.1.0.v201304241213.jar}" todir="${dist.ear.dir}/lib"/>
         <copyfiles files="${file.reference.org.eclipse.persistence.jpa.jpql_2.5.2.v20140319-9ad6abd.jar}" todir="${dist.ear.dir}/lib"/>
+        <copyfiles files="${reference.Lab2-EAR-console.jar}" todir="${dist.ear.dir}/lib"/>
         <manifest file="${build.ear.classes.dir}/META-INF/MANIFEST.MF" mode="update"/>
     </target>
     <target name="-copy-meta-inf">
@@ -1202,7 +1210,9 @@ exists or setup the property manually. For example like this:
     <!--
                 CLEANUP SECTION
             -->
-    <target depends="init" name="deps-clean" unless="no.deps"/>
+    <target depends="init" name="deps-clean" unless="no.deps">
+        <ant antfile="${project.Lab2-EAR-console}/build.xml" inheritall="false" target="clean"/>
+    </target>
     <target depends="init" name="-do-clean">
         <delete dir="${build.dir}"/>
         <delete dir="${dist.dir}"/>

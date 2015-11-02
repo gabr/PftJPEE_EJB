@@ -1,5 +1,10 @@
 package pl.polsl.gabrys.arkadiusz;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import pl.polsl.gabrys.arkadiusz.interfaces.DatabaseManagerRemote;
 import pl.polsl.gabrys.arkadiusz.view.View;
 
 /**
@@ -14,6 +19,22 @@ public class Controller {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
+        
+        InitialContext ic = null;
+        
+        try {
+            ic = new InitialContext();
+        } catch (NamingException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        
+        DatabaseManagerRemote db = null;
+        
+        try {
+            db = (DatabaseManagerRemote) ic.lookup("DatabaseManager");
+        } catch (NamingException ex) {
+            Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         // create a View class and pass command line arguments
         View view = new View();
