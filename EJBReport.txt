@@ -1,0 +1,55 @@
+The same as in JPA but using EJB.
+JPA is working differently in EJB environment.
+So:
+  1. Move persistence.xml file to configuration files in EJB
+  2. Change transaction from RESOURCE-LOCAL to JTA
+  3. Get rid of <class> but use:
+     <exclude-unlisted-classes> false </exclude-unlisted-classes>
+  4. Define JTA data source:
+      <jta-data-source>jdbc/db</jta-data-source>
+
+To create JTA data source:
+  1. Goto glassfish server console: localhost:4848
+  2. Define connection pool and assign it to data source:
+  2.1 Resources/JDBC
+  2.2 In JDBC Connection pools:
+  2.2.1 Set Pool Name
+  2.2.2 Set Resource Type: javax.sql.XADataSource
+  2.2.3 Set Database Driver Vendor: MySql
+  2.2.4 Press next
+  2.2.5 Specify:
+        user: db
+        password: db_pass
+        databaseName: db
+  2.2.6 Add new property: url
+        and set it to: jdbc:mysql://localhost:3306/db
+  2.3 In JDBC Resources:
+  2.3.1 Press New
+  2.3.2 Set JNDI Name to: jdbc/db
+  2.3.3 Set Pool Name to: db_pool
+  2.3.4. Press ok
+
+In the DatabaseManager class the transactions are no longer required.
+So we need to get rid of manual starting and ending transactions.
+
+To create entity manager create a field in session bean and specify
+PersistenceContext adnotation:
+  @PersistenceContext(unitName="Lab1-JPA")
+  private EntityManager entityManager;
+
+
+Triangle
+EJB
+  Code responsible for database handling.
+  But all in stateless session bean with remote interface to use from client.
+Client
+  Put code that was previously in View class.
+  Inject or lookup the session bean and then use the remote methods.
+Console
+  The remote interface of session bean and the entity classes.
+
+In the report:
+  Javadoc for EJB, Client and Console.
+  And NetBeans project.
+  If the project doesn't fit remove libs.
+

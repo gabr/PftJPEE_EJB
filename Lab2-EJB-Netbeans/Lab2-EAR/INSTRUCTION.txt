@@ -1,0 +1,21 @@
+1.There are four projects altogether:
+  a)  Lab2-EAR - the container project for ejb and client modules. Contains sun-resources.xml file
+    configuring the JDBC connection pool and JDBC data source. There is NO need to create them manually
+    using Glassfish administration console. Please make sure there is neither jdbc/db JDBC resource
+    nor db_pool JDBC Connection Pool created manually on the server.
+  b)  Lab2-EAR-ejb - EJB module, here you put your session beans (stateless, with remote user interface).
+    This project should reference Lab2-EAR-console.jar directly (not as a project).
+  c)  Lab2-EAR-client - Application Client module, here you put your controller and view part. Do NOT run this
+    project explicitly. This project should reference Lab2-EAR-console.jar directly (not as a project).
+  d)  Lab2-EAR-console - here you put your @Remote session bean interface and entity classes. They will issue
+    a warning about missing persistence unit which you can safely ignore.
+
+2.The project assumes that db database with db_user, db_pass credentials is available, as in the previous project.
+
+3.In persistence.xml file add your entity classes using Add Class... button in Design view, or in Source view
+  add for each entity <class>fully.qualified.name.of.the.Class</class>. Although I initially told you this is
+  not necessary, it is indeed required because we have the entities in an external JAR.
+  It will not be required starting from project 3.
+
+4.Follow the package naming convention proposed in the previous report, which means you should include your
+  last name and first name in the package name.
