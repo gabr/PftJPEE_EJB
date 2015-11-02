@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.9.4
-Created-By: 1.8.0_45-b14 (Oracle Corporation)
-X-COMMENT: Main-Class will be added automatically by build
-Class-Path: Lab2-EAR-console.jar lib/Lab2-EAR-console.jar 
-Main-Class: pl.polsl.lastname.firstname.Controller
-
