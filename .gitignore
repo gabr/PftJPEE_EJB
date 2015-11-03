@@ -23,3 +23,4 @@
 *.lock
 *.zip
 /Lab2-EJB-Netbeans/Lab2-EAR/Lab2-EAR-ejb/dist/
+/Lab2-EJB-Netbeans/Lab2-EAR/Lab2-EAR-ejb/build/*

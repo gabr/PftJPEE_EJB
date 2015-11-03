@@ -36,8 +36,10 @@ public class Controller {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
         
+        args = new String[] {"-f", "Author", "All"};
+        
         // create a View class and pass command line arguments
-        View view = new View();
+        View view = new View(db);
         
         // manage user input
         Integer errorCode = view.manageUserInput(args);

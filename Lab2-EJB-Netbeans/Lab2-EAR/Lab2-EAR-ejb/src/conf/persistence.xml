@@ -5,7 +5,8 @@
         <!-- Data source JNDI name as defined in sun-resources in Lab2-EAR project -->
         <jta-data-source>jdbc/db</jta-data-source>
         <!-- List your entity classes here - since they are in external JAR they have to be listed explicitly anyway! -->
-        <!-- <class></class> -->
+        <class>pl.polsl.gabrys.arkadiusz.model.Author</class>
+        <class>pl.polsl.gabrys.arkadiusz.model.Book</class>
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <properties>
             <property name="javax.persistence.schema-generation.database.action" value="create"/>

@@ -27,7 +27,7 @@ public class DatabaseManager implements DatabaseManagerRemote {
     /**
      * Entity manager instance
      */
-    @PersistenceContext(unitName="Lab1-JPA")
+    @PersistenceContext(name="Lab2-EJB")
     private EntityManager entityManager;
 
     /**

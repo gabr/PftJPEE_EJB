@@ -17,6 +17,7 @@
                           validate-atmost-once-period-in-seconds="0" wrap-jdbc-objects="false">
         <property name="URL" value="jdbc:mysql://localhost:3306/db?zeroDateTimeBehavior=convertToNull"/>
         <property name="User" value="db_user"/>
+        <property name="user" value="db_user"/>
         <property name="Password" value="db_pass"/>
     </jdbc-connection-pool>
 </resources>

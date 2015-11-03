@@ -12,6 +12,7 @@ import org.apache.commons.cli.Option;
 import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import pl.polsl.gabrys.arkadiusz.interfaces.DatabaseManagerRemote;
 
 /**
  * Class provides CLI and interactive console interface
@@ -127,11 +128,25 @@ public class View {
      * Options structure for parsing
      */
     private final Options options;
+    
+    /**
+     * Database manager
+     */
+    private final DatabaseManagerRemote databaseManager;
 
     /**
      * Creates options structure for parsing
+     * @throws IllegalArgumentException if the given database instance is null
      */
-    public View() {
+    public View(DatabaseManagerRemote db) throws IllegalArgumentException {
+        
+        // check the database object
+        if (db == null)
+            throw new IllegalArgumentException("Database manager cannot be null");
+        
+        // save database instance
+        databaseManager = db;
+        
         // create options structure
         options = new Options();
         OptionGroup interactiveHelpCRUD = new OptionGroup();
@@ -218,9 +233,6 @@ public class View {
             case "h":
                 errorCode = help(selected);
                 break;
-//            case "i":
-//                System.out.println("i");
-//                break;
             case "p":
                 errorCode = persist(selected);
                 break;
@@ -262,11 +274,6 @@ public class View {
                     System.out.println(HELP_HELP);
                     break;
                     
-//                case "i":
-//                case "interactive":
-//                    System.out.println(HELP_INTERACTIVE);
-//                    break;
-                    
                 case "p":
                 case "persist":
                     System.out.println(HELP_PERSIST);
@@ -303,7 +310,6 @@ public class View {
      * @return the error code
      */
     private Integer persist(Option selected) {
-        //DatabaseManager db = new DatabaseManager();
         List<String> values = selected.getValuesList();
         
         if (values.size() < 2) {
@@ -323,9 +329,7 @@ public class View {
                     String name = values.get(1).trim();
                     String lastName = values.get(2).trim();
                     
-                    //db.startTransaction();
-                    //db.persistAuthor(name, lastName);
-                    //db.commitTransaction();                    
+                    databaseManager.persistAuthor(name, lastName);           
                     break;
                     
                 case "book":
@@ -364,10 +368,8 @@ public class View {
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
-                    try {
-                        //db.startTransaction();                    
-                        //db.persistBook(title, pages, date, authorId);
-                        //db.commitTransaction();
+                    try {                
+                        databaseManager.persistBook(title, pages, date, authorId);
                     } catch (IllegalArgumentException ex) {
                         System.out.println(ex.getMessage());
                         return ERROR_CODE_OPTION_ERROR;
@@ -405,9 +407,9 @@ public class View {
             case "author":               
 
                 if (key.equals("all")) {
-                    //for (Object o: db.findAllAuthors()) {
-                    //    System.out.println(o.toString());
-                    //}
+                    for (Object o: databaseManager.findAllAuthors()) {
+                        System.out.println(o.toString());
+                    }
                 } else if (key.equals("id")) {
                     Long id = null;
                     
@@ -418,20 +420,20 @@ public class View {
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
-                    //Object o = db.findAuthorById(id);
+                    Object o = databaseManager.findAuthorById(id);
                     
-                    //if (o != null) {
-                    //    System.out.println(o.toString());
-                    //} else {
-                    //    System.out.println("No author with given id found.\n");
-                    //}
+                    if (o != null) {
+                        System.out.println(o.toString());
+                    } else {
+                        System.out.println("No author with given id found.\n");
+                    }
                     
                 } else if (key.equals("name")) {
                     String pattern = values.get(2).trim();
                     
-                    //for (Object o: db.findAuthorsByName(pattern)) {
-                    //    System.out.println(o.toString());
-                    //}
+                    for (Object o: databaseManager.findAuthorsByName(pattern)) {
+                        System.out.println(o.toString());
+                    }
                 } else {
                     System.out.println("Wrong search option!\n");
                     System.out.println(HELP_FIND);
@@ -443,9 +445,9 @@ public class View {
 
             case "book":               
                 if (key.equals("all")) {
-                    //for (Object o: db.findAllBooks()) {
-                    //    System.out.println(o.toString());
-                    //}
+                    for (Object o: databaseManager.findAllBooks()) {
+                        System.out.println(o.toString());
+                    }
                 } else if (key.equals("id")) {
                     Long id = null;
                     
@@ -456,20 +458,20 @@ public class View {
                         return ERROR_CODE_OPTION_ERROR;
                     }
                     
-                    //Object o = db.findBookById(id);
+                    Object o = databaseManager.findBookById(id);
                     
-                    //if (o != null) {
-                    //    System.out.println(o.toString());
-                    //} else {
-                    //    System.out.println("No book with given id found.\n");
-                    //}
+                    if (o != null) {
+                        System.out.println(o.toString());
+                    } else {
+                        System.out.println("No book with given id found.\n");
+                    }
                     
                 } else if (key.equals("title")) {
                     String pattern = values.get(2).trim();
                     
-                    //for (Object o: db.findBooksByTitle(pattern)) {
-                    //    System.out.println(o.toString());
-                    //}
+                    for (Object o: databaseManager.findBooksByTitle(pattern)) {
+                        System.out.println(o.toString());
+                    }
                 } else {
                     System.out.println("Wrong search option!\n");
                     System.out.println(HELP_FIND);
@@ -524,9 +526,7 @@ public class View {
                 String lastName = values.get(3).trim();
 
                 try {
-                    //db.startTransaction();
-                    //db.mergeAuthor(id, name, lastName);
-                    //db.commitTransaction();
+                    databaseManager.mergeAuthor(id, name, lastName);
                 } catch (IllegalArgumentException ex) {
                     System.out.println(ex.getMessage());
                     return ERROR_CODE_OPTION_ERROR;
@@ -570,9 +570,7 @@ public class View {
                 }
 
                 try {
-                    //db.startTransaction();
-                    //db.mergeBook(id, title, pages, date, authorId);
-                    //db.commitTransaction();
+                    databaseManager.mergeBook(id, title, pages, date, authorId);
                 } catch (IllegalArgumentException ex) {
                     System.out.println(ex.getMessage());
                     return ERROR_CODE_OPTION_ERROR;
@@ -617,9 +615,7 @@ public class View {
         switch (entity) {
             case "author":
                 try {
-                    //db.startTransaction();
-                    //db.removeAuthor(id);
-                    //db.commitTransaction();
+                    databaseManager.removeAuthor(id);
                 } catch (IllegalArgumentException ex) {
                     System.out.println(ex.getMessage());
                     return ERROR_CODE_OPTION_ERROR;
@@ -628,9 +624,7 @@ public class View {
 
             case "book":
                 try {
-                    //db.startTransaction();
-                    //db.removeBook(id);
-                    //db.commitTransaction();
+                    databaseManager.removeBook(id);
                 } catch (IllegalArgumentException ex) {
                     System.out.println(ex.getMessage());
                     return ERROR_CODE_OPTION_ERROR;
