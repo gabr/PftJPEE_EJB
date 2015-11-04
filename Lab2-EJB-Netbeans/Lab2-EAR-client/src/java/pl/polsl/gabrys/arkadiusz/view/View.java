@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Scanner;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
 import org.apache.commons.cli.DefaultParser;
@@ -17,7 +18,7 @@ import pl.polsl.gabrys.arkadiusz.interfaces.DatabaseManagerRemote;
 /**
  * Class provides CLI and interactive console interface
  * @author Arkadiusz Gabryś
- * @version 1.0
+ * @version 1.5
  */
 public class View {
     
@@ -37,6 +38,11 @@ public class View {
     public final Integer ERROR_CODE_UNKNOWN_ERROR = 2;
     
     /**
+     * Error code for exit action
+     */
+    public final Integer ERROR_CODE_EXIT = -1;
+    
+    /**
      * Help message for help option
      */
     private final String HELP_HELP = "help\n"
@@ -47,10 +53,10 @@ public class View {
             + "specified option.\n"
             + "\n"
             + "Examples:\n"
-            + "    java -jar Lab1-JPA.jar -h\n"
-            + "    java -jar Lab1-JPA.jar -help\n"
-            + "    java -jar Lab1-JPA.jar -h f\n"
-            + "    java -jar Lab1-JPA.jar -h find\n";
+            + "    EJB-Client -h\n"
+            + "    EJB-Client -help\n"
+            + "    EJB-Client -h f\n"
+            + "    EJB-Client -h find\n";
     
 //    /**
 //     * Help message for interactive option
@@ -61,8 +67,8 @@ public class View {
 //            + "Starts interactive console interface.\n"
 //            + "\n"
 //            + "Examples:\n"
-//            + "    java -jar Lab1-JPA.jar -i\n"
-//            + "    java -jar Lab1-JPA.jar -interactive\n";
+//            + "    EJB-Client -i\n"
+//            + "    EJB-Client -interactive\n";
     
     /**
      * Help message for persist option
@@ -75,8 +81,8 @@ public class View {
             + "Adds new Author or Book entity to the database.\n"
             + "\n"
             + "Examples:\n"
-            + "    java -jar Lab1-JPA.jar -p Author Stephen King\n"
-            + "    java -jar Lab1-JPA.jar -persist Book \"The Waste Lands\" 351 \"1991.01.23\" 1\n";
+            + "    EJB-Client -p Author Stephen King\n"
+            + "    EJB-Client -persist Book \"The Waste Lands\" 351 \"1991.01.23\" 1\n";
     
     /**
      * Help message for find option
@@ -93,8 +99,8 @@ public class View {
             + "Finds all entities or entities with given value.\n"
             + "\n"
             + "Examples:\n"
-            + "    java -jar Lab1-JPA.jar -f Author Name Stephen\n"
-            + "    java -jar Lab1-JPA.jar -find Book All\n";
+            + "    EJB-Client -f Author Name Stephen\n"
+            + "    EJB-Client -find Book All\n";
     
     /**
      * Help message for merge option
@@ -107,8 +113,8 @@ public class View {
             + "Changes values for entity with given id.\n"
             + "\n"
             + "Examples:\n"
-            + "    java -jar Lab1-JPA.jar -m 1 Author Stephen King\n"
-            + "    java -jar Lab1-JPA.jar -merge 2 Book \"Drawing of the Three\" 284 \"1987.03.13\" 1\n";
+            + "    EJB-Client -m 1 Author Stephen King\n"
+            + "    EJB-Client -merge 2 Book \"Drawing of the Three\" 284 \"1987.03.13\" 1\n";
     
     /**
      * Help message for remove option
@@ -121,8 +127,8 @@ public class View {
             + "Removes entity with given id.\n"
             + "\n"
             + "Examples:\n"
-            + "    java -jar Lab1-JPA.jar -r 1\n"
-            + "    java -jar Lab1-JPA.jar -remove 2\n";
+            + "    EJB-Client -r 1\n"
+            + "    EJB-Client -remove 2\n";
     
     /**
      * Options structure for parsing
@@ -151,6 +157,13 @@ public class View {
         options = new Options();
         OptionGroup interactiveHelpCRUD = new OptionGroup();
         
+        interactiveHelpCRUD.addOption(Option.builder("q")
+                .longOpt("quit")
+                .optionalArg(false)
+                .numberOfArgs(0)
+                .desc("exits the program")
+                .build());
+        
         interactiveHelpCRUD.addOption(Option.builder("h")
                 .longOpt("help")
                 .optionalArg(true)
@@ -158,11 +171,6 @@ public class View {
                 .argName("option name")
                 .desc("prints this help or option help")
                 .build());
-        
-//        interactiveHelpCRUD.addOption(Option.builder("i")
-//                .longOpt("interactive")
-//                .desc("interactive mode")
-//                .build());
         
         interactiveHelpCRUD.addOption(Option.builder("p")
                 .longOpt("persist")
@@ -202,6 +210,29 @@ public class View {
         interactiveHelpCRUD.setRequired(true);
         options.addOptionGroup(interactiveHelpCRUD);
     }
+    
+    /**
+     * Prints help message
+     */
+    public void printHelp() {
+        HelpFormatter formatter = new HelpFormatter();
+        formatter.printHelp("EJB-Client", "\nLibrary database CRUD", options, "");
+    }
+    
+    /**
+     * Gets input arguments from user
+     * @return the input arguments 
+     */
+    public String[] readArgs() {
+        Scanner reader = new Scanner(System.in);
+        
+        System.out.println("\n");
+        System.out.println(">>> EJB-Client input arguments: ");
+        
+        String input = "EJB-Client " + reader.nextLine();
+        System.out.println(input);
+        return input.split(" ");
+    }
 
     /**
      * Decides about action based on given arguments
@@ -219,11 +250,8 @@ public class View {
         try {
             commandLine = parser.parse(options, args);
         } catch (ParseException pe) {
-            formatter.printHelp("java -jar Lab1-JPA.jar", "\nLibrary database CRUD", options, "\n" + pe.getMessage());
+            formatter.printHelp("EJB-Client", "\nLibrary database CRUD", options, "\n" + pe.getMessage());
             return ERROR_CODE_OPTION_ERROR;
-        } catch (Exception ex) {
-            formatter.printHelp("java -jar Lab1-JPA.jar", "\nLibrary database CRUD", options, "\nUndefined error");
-            return ERROR_CODE_UNKNOWN_ERROR;
         }
         
         // only one option can be passed
@@ -245,6 +273,9 @@ public class View {
             case "r":
                 errorCode = remove(selected);
                 break;
+            case "q":
+                errorCode = ERROR_CODE_EXIT;
+                break;
         }
         
         return errorCode;
@@ -261,7 +292,7 @@ public class View {
         if (value == null || value.isEmpty())
         {
             HelpFormatter formatter = new HelpFormatter();
-            formatter.printHelp("java -jar Lab1-JPA.jar",
+            formatter.printHelp("EJB-Client",
                     "\nLibrary database CRUD",
                     options,
                     "\nFor details type -h with option name.");
@@ -345,7 +376,7 @@ public class View {
                     
                     try {
                         pages = Long.parseLong(values.get(2));
-                    } catch (Exception ex) {
+                    } catch (NumberFormatException ex) {
                         System.out.println("Wrong nuber of pages parameter!\n");
                         System.out.println(HELP_PERSIST);
                         return ERROR_CODE_OPTION_ERROR;
@@ -354,7 +385,7 @@ public class View {
                     try {
                         DateFormat df = new SimpleDateFormat("yyyy.MM.dd");
                         date = df.parse(values.get(3));
-                    } catch (Exception ex) {
+                    } catch (java.text.ParseException ex) {
                         System.out.println("Wrong date format!\n");
                         System.out.println(HELP_PERSIST);
                         return ERROR_CODE_OPTION_ERROR;
@@ -362,7 +393,7 @@ public class View {
                     
                     try {
                         authorId = Long.parseLong(values.get(4));
-                    } catch (Exception ex) {
+                    } catch (NumberFormatException ex) {
                         System.out.println("Wrong author id!\n");
                         System.out.println(HELP_PERSIST);
                         return ERROR_CODE_OPTION_ERROR;
@@ -415,7 +446,7 @@ public class View {
                     
                     try {
                         id = Long.parseLong(values.get(2));
-                    } catch (Exception ex) {
+                    } catch (NumberFormatException ex) {
                         System.out.println("Given id is not an integer number!\n");                        
                         return ERROR_CODE_OPTION_ERROR;
                     }
@@ -453,7 +484,7 @@ public class View {
                     
                     try {
                         id = Long.parseLong(values.get(2));
-                    } catch (Exception ex) {
+                    } catch (NumberFormatException ex) {
                         System.out.println("Given id is not an integer number!\n");                        
                         return ERROR_CODE_OPTION_ERROR;
                     }
@@ -546,7 +577,7 @@ public class View {
 
                 try {
                     pages = Long.parseLong(values.get(3));
-                } catch (Exception ex) {
+                } catch (NumberFormatException ex) {
                     System.out.println("Wrong nuber of pages parameter!\n");
                     System.out.println(HELP_MERGE);
                     return ERROR_CODE_OPTION_ERROR;
@@ -555,7 +586,7 @@ public class View {
                 try {
                     DateFormat df = new SimpleDateFormat("yyyy.MM.dd");
                     date = df.parse(values.get(3));
-                } catch (Exception ex) {
+                } catch (java.text.ParseException ex) {
                     System.out.println("Wrong date format!\n");
                     System.out.println(HELP_MERGE);
                     return ERROR_CODE_OPTION_ERROR;
@@ -563,7 +594,7 @@ public class View {
 
                 try {
                     authorId = Long.parseLong(values.get(5));
-                } catch (Exception ex) {
+                } catch (NumberFormatException ex) {
                     System.out.println("Author id is not an integer number!\n");
                     System.out.println(HELP_MERGE);
                     return ERROR_CODE_OPTION_ERROR;

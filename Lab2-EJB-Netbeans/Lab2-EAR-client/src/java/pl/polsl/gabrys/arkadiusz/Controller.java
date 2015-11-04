@@ -1,5 +1,6 @@
 package pl.polsl.gabrys.arkadiusz;
 
+import java.util.Objects;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.naming.InitialContext;
@@ -10,7 +11,7 @@ import pl.polsl.gabrys.arkadiusz.view.View;
 /**
  * Main class with the main method
  * @author Arkadiusz Gabryś
- * @version 1.0
+ * @version 1.5
  */
 public class Controller {
     
@@ -36,15 +37,24 @@ public class Controller {
             Logger.getLogger(Controller.class.getName()).log(Level.SEVERE, null, ex);
         }
         
-        args = new String[] {"-f", "Author", "All"};
-        
         // create a View class and pass command line arguments
         View view = new View(db);
         
-        // manage user input
-        Integer errorCode = view.manageUserInput(args);
+        // print help message
+        view.printHelp();
         
-        // return error code to the shell
-        System.exit(errorCode);
+        while (true) {
+            // read user input
+            args = view.readArgs();
+
+            // manage user input
+            Integer errorCode = view.manageUserInput(args);
+            
+            if (Objects.equals(errorCode, view.ERROR_CODE_EXIT)) {
+                // return error code to the shell
+                System.exit(view.ERROR_CODE_OK);
+            }
+        }
+        
     }
 }

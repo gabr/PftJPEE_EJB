@@ -56,7 +56,7 @@ public class DatabaseManager implements DatabaseManagerRemote {
      * @throws PersistenceException if the query execution exceeds the query timeout value set and the transaction is rolled back
      */
     @Override
-    public List<Author> findAllAuthors() throws IllegalArgumentException, QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
+    public List<Author> findAllAuthors() throws QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
       return findAll(Author.class);
     }
 
@@ -100,7 +100,7 @@ public class DatabaseManager implements DatabaseManagerRemote {
      * @throws PersistenceException if the query execution exceeds the query timeout value set and the transaction is rolled back
      */
     @Override
-    public List<Book> findAllBooks() throws IllegalArgumentException, QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
+    public List<Book> findAllBooks() throws QueryTimeoutException, TransactionRequiredException, PessimisticLockException, LockTimeoutException, PersistenceException {
       return findAll(Book.class);
     }
 
